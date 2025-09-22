@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo } from 'react';
 import type { SupportResource } from '../types';
 import ShareButton from './ShareButton';
@@ -39,14 +40,8 @@ const SupportScreen: React.FC<SupportScreenProps> = ({ onBack }) => {
     const resources = getSupportResources();
     
     // Create the chat service instance only when needed, and memoize it.
-    const chat = useMemo(() => {
-        try {
-            return createChatService();
-        } catch (error) {
-            console.error("Failed to create chat service:", error);
-            return null;
-        }
-    }, []);
+    // The new offline service cannot fail to initialize, so the try/catch is removed.
+    const chat = useMemo(() => createChatService(), []);
 
     const immediateHelpNames = ['Samaritans', 'NHS Urgent Mental Health Helpline', 'National Suicide Prevention Helpline UK'];
     const immediateHelpResources = resources.filter(r => immediateHelpNames.includes(r.name));

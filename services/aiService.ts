@@ -1,85 +1,63 @@
-import { GoogleGenAI } from '@google/genai';
-import OpenAI from 'openai';
-import type { Chat, ChatChunk } from '../types';
-import { config } from './config';
+import type { Chat, ChatChunk, IChat } from '../types';
 
-// Ensure the API key is available
-if (!process.env.API_KEY) {
-  throw new Error('API_KEY environment variable not set.');
-}
+// Keyword-based response mapping.
+// The keys are keywords to look for (lowercase). The values are the pre-written responses.
+const cannedResponses: Record<string, string> = {
+  'craving': "It's completely normal to feel a craving, and it's a sign that you're making a change. Remember that cravings are like waves; they build, peak, and then pass. Try distracting yourself for 15 minutes. Go for a short walk, listen to a loud song, or drink a large glass of cold water. You can get through this moment. The Mindful Drinking Hub also has a 'breather' tool that might help.",
+  'urge': "It's completely normal to feel an urge, and it's a sign that you're making a change. Remember that urges are like waves; they build, peak, and then pass. Try distracting yourself for 15 minutes. Go for a short walk, listen to a loud song, or drink a large glass of cold water. You can get through this moment. The Mindful Drinking Hub also has a 'breather' tool that might help.",
+  'lonely': "Feeling lonely is incredibly tough. Reaching out is a brave first step. Sometimes just connecting with another human voice can make a world of difference. The Samaritans are available to listen 24/7 on 116 123. They're completely confidential and there to support you.",
+  'stressed': "Stress is a major trigger for many people. It sounds like you're going through a lot right now. Instead of a drink, could you try a different 10-minute activity to decompress? A short walk, some deep breathing exercises, or even just stepping outside for fresh air can sometimes help break the cycle. The Mindful Drinking Hub has a breathing tool you can use.",
+  'help': "It's great that you're reaching out for help. There are amazing, confidential resources available. For a friendly, non-judgmental chat about your drinking, you can call Drinkline for free on 0300 123 1110. If you're feeling overwhelmed emotionally, the Samaritans are always there to listen on 116 123.",
+  'friend': "It's hard seeing a friend struggle. The best thing you can do is talk to them when they're sober, express your concern using 'I' statements (like 'I'm worried about you'), and listen without judgment. For your own support, Al-Anon (0800 0086 811) is a fantastic resource for friends and family of people with drinking problems.",
+  'anxious': "Anxiety can be really overwhelming, and it's common to want to reach for something to quiet it down. Remember that while alcohol might seem to help in the short term, it often makes anxiety worse in the long run. Try a grounding technique: name 5 things you can see, 4 things you can touch, 3 things you can hear, 2 things you can smell, and 1 thing you can taste. This can help bring you back to the present moment.",
+  'default': "Thank you for reaching out. I'm here to offer support. I can provide guidance on managing cravings, finding resources, or dealing with difficult feelings. What's on your mind? Remember, if you need to talk to someone, you can call the Samaritans on 116 123 at any time.",
+};
 
-// System instruction for the AI assistant
-const SYSTEM_INSTRUCTION = `You are "Beacon," a compassionate, supportive AI assistant for the "Find Offlicence Near Me" app. Your primary role is to provide immediate, non-judgmental support and practical guidance for users struggling with alcohol cravings or emotional distress.
-
-**Core Directives:**
-1.  **Prioritize Safety Above All:** If a user mentions self-harm, suicide, or being in immediate danger, your *only* response must be to direct them to emergency services. Start your response with: "It sounds like you are in immediate distress. Please call 999 or the Samaritans on 116 123 right now." Do not offer any other advice.
-2.  **Be Supportive, Not a Therapist:** Offer empathetic listening, practical coping strategies (like distraction techniques, mindfulness), and encouragement. Do not provide medical advice, diagnoses, or long-term therapy. Use phrases like "That sounds incredibly tough" or "It's understandable to feel that way."
-3.  **Guide, Don't Prescribe:** Suggest helpful actions and resources. Use phrases like "Some people find it helpful to..." or "Have you considered...".
-4.  **Provide Actionable Resources:** Nudge users towards established UK support systems. Mention specific, credible resources like Drinkline (0300 123 1110), Samaritans (116 123), and SMART Recovery. Always include phone numbers where applicable.
-5.  **Maintain a Calm & Gentle Tone:** Be reassuring, patient, and kind. Avoid jargon. Keep responses concise and easy to understand.
-6.  **Enforce Boundaries:** Gently remind users you are an AI assistant and not a substitute for professional help if they ask for medical advice or therapy. Example: "As an AI, I can't offer medical advice, but I can share some resources that might be helpful."`;
+// Safety net for self-harm keywords.
+const SELF_HARM_KEYWORDS = ['suicide', 'kill myself', 'want to die', 'end my life', 'self harm', 'self-harm', 'hurting myself'];
+const SAFETY_RESPONSE = "It sounds like you are in immediate distress. Please call 999 or the Samaritans on 116 123 right now. They are available 24/7 to provide the urgent help you need.";
 
 /**
- * Creates and returns a chat service instance based on the configuration.
- * This function acts as a factory, abstracting the specific AI provider implementation.
+ * A simulated chat service that provides pre-written responses.
+ * It operates entirely offline and requires no API key.
+ */
+class OfflineChat implements IChat {
+  // Simulates a streaming response by yielding words one by one.
+  async *sendMessageStream({ message }: { message: string }): AsyncIterable<ChatChunk> {
+    const lowerCaseMessage = message.toLowerCase();
+
+    // **IMPERATIVE SAFETY CHECK**
+    const containsSelfHarmKeyword = SELF_HARM_KEYWORDS.some(keyword => lowerCaseMessage.includes(keyword));
+    if (containsSelfHarmKeyword) {
+        // Yield the safety response immediately and stop.
+        yield { text: SAFETY_RESPONSE };
+        return;
+    }
+
+    let responseText = cannedResponses['default'];
+    for (const keyword in cannedResponses) {
+        if (lowerCaseMessage.includes(keyword)) {
+            responseText = cannedResponses[keyword];
+            break;
+        }
+    }
+
+    // Simulate the AI "typing" by streaming the response word by word.
+    const words = responseText.split(' ');
+    for (let i = 0; i < words.length; i++) {
+        // Yield each word with a space after it.
+        yield { text: words[i] + (i === words.length - 1 ? '' : ' ') };
+        // A short delay to make the typing feel more natural.
+        await new Promise(resolve => setTimeout(resolve, 50));
+    }
+  }
+}
+
+/**
+ * Creates and returns a hard-wired, offline chat service instance.
+ * This removes all external AI dependencies.
  */
 export function createChatService(): Chat {
-  if (config.aiProvider === 'openai') {
-    console.log('Initializing OpenAI Chat Service');
-    const openai = new OpenAI({
-      apiKey: process.env.API_KEY,
-      dangerouslyAllowBrowser: true,
-    });
-
-    // Adapter to make OpenAI's stream compatible with our generic IChat interface
-    return {
-      // Fix: Changed from an async generator (`async *`) to an async function that returns a promise
-      // resolving to an async iterable. This now matches the `IChat` interface.
-      async sendMessageStream({ message }: { message: string }): Promise<AsyncIterable<ChatChunk>> {
-        const stream = await openai.chat.completions.create({
-          model: 'gpt-4o-mini', // Recommended model for cost/performance balance
-          messages: [
-            { role: 'system', content: SYSTEM_INSTRUCTION },
-            { role: 'user', content: message },
-          ],
-          stream: true,
-        });
-
-        async function* transformStream(): AsyncIterable<ChatChunk> {
-          for await (const chunk of stream) {
-            const text = chunk.choices[0]?.delta?.content || '';
-            if (text) {
-              yield { text };
-            }
-          }
-        }
-        return transformStream();
-      },
-    };
-  }
-
-  // Default to Gemini
-  console.log('Initializing Google Gemini Chat Service');
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-  const geminiChat = ai.chats.create({
-    model: 'gemini-2.5-flash',
-    config: {
-      systemInstruction: SYSTEM_INSTRUCTION,
-    },
-  });
-
-  return {
-    // Fix: Changed from an async generator (`async *`) to an async function that returns a promise
-    // resolving to an async iterable. This now matches the `IChat` interface.
-    async sendMessageStream({ message }: { message: string }): Promise<AsyncIterable<ChatChunk>> {
-      const stream = await geminiChat.sendMessageStream({ message });
-      
-      async function* transformStream(): AsyncIterable<ChatChunk> {
-        for await (const chunk of stream) {
-          yield { text: chunk.text };
-        }
-      }
-      return transformStream();
-    },
-  };
+  console.log('Initializing Offline Chat Service');
+  return new OfflineChat();
 }

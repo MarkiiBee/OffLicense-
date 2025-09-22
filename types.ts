@@ -1,5 +1,4 @@
 
-import type { Chat as GeminiChat } from '@google/genai';
 
 export interface SupportResource {
   name: string;
@@ -52,7 +51,7 @@ export interface ChatChunk {
 
 // A generic interface that any chat service (Gemini, OpenAI) must implement
 export interface IChat {
-    sendMessageStream(params: { message: string }): Promise<AsyncIterable<ChatChunk>>;
+    sendMessageStream(params: { message: string }): AsyncIterable<ChatChunk>;
 }
 
 // The rest of the app will use this generic type, allowing for easy switching

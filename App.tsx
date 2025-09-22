@@ -103,8 +103,9 @@ const App: React.FC = () => {
       urlPath += `&slug=${newSlug}`;
     }
 
+    const newUrl = `${window.location.origin}${window.location.pathname}${urlPath}`;
     window.history.pushState({ view: newView, slug: newSlug }, '', urlPath);
-    setCurrentUrl(window.location.href);
+    setCurrentUrl(newUrl);
     setError(null);
     window.scrollTo(0, 0);
   };
@@ -115,8 +116,9 @@ const App: React.FC = () => {
   
   const goHome = () => {
     handleNavigateAwayFromContact();
+    const newUrl = `${window.location.origin}/`;
     window.history.pushState({ view: View.SEARCH }, '', '/');
-    setCurrentUrl(window.location.href);
+    setCurrentUrl(newUrl);
     setError(null);
     window.scrollTo(0, 0);
   };
@@ -149,7 +151,13 @@ const App: React.FC = () => {
   const handleShowBusinessContact = () => {
     setContactPrefill({
       category: 'business_inquiry',
-      message: 'Hi, I\'m a business owner and I\'d like to learn more about claiming or updating my listing on your app.\n\nBusiness Name:\nLocation:\n'
+    });
+    navigateTo(View.CONTACT);
+  };
+
+  const handleShowDesignerContact = () => {
+    setContactPrefill({
+      category: 'designer_contact',
     });
     navigateTo(View.CONTACT);
   };
@@ -233,6 +241,7 @@ const App: React.FC = () => {
               onShowPrivacy={() => navigateTo(View.PRIVACY)}
               onShowTerms={() => navigateTo(View.TERMS)}
               onShowContact={() => navigateTo(View.CONTACT)}
+              onShowDesignerContact={handleShowDesignerContact}
             />
         </main>
         

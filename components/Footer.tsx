@@ -6,9 +6,10 @@ interface FooterProps {
     onShowPrivacy: () => void;
     onShowTerms: () => void;
     onShowContact: () => void;
+    onShowDesignerContact: () => void;
 }
 
-const Footer: React.FC<FooterProps> = ({ onShowAbout, onShowPrivacy, onShowTerms, onShowContact }) => {
+const Footer: React.FC<FooterProps> = ({ onShowAbout, onShowPrivacy, onShowTerms, onShowContact, onShowDesignerContact }) => {
   return (
     <footer className="bg-slate-900 mt-12">
       <div className="container mx-auto px-4 py-8">
@@ -29,7 +30,7 @@ const Footer: React.FC<FooterProps> = ({ onShowAbout, onShowPrivacy, onShowTerms
                     &copy; {new Date().getFullYear()} Find Offlicence Near Me. All rights reserved.
                 </p>
                 <p>
-                    Designed by Mark Bradshaw
+                    Designed by <button onClick={onShowDesignerContact} className="underline text-slate-400 hover:text-indigo-300 transition-colors">Mark Bradshaw</button>
                 </p>
             </div>
         </div>

@@ -64,7 +64,7 @@ const SupportChat: React.FC<SupportChatProps> = ({ chat }) => {
         setError(null);
 
         try {
-            const stream = await chat.sendMessageStream({ message: trimmedInput });
+            const stream = chat.sendMessageStream({ message: trimmedInput });
             
             let modelResponse = '';
             setMessages(prev => [...prev, { role: 'model', text: '...' }]);

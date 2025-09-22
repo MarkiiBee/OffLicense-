@@ -8,6 +8,15 @@ interface ContactScreenProps {
   prefill?: { category?: string; message?: string } | null;
 }
 
+const categoryTemplates: { [key: string]: string } = {
+  suggestion: 'Hi, I have a suggestion to improve the app:\n\n',
+  bug_report: 'Hi, I encountered an error.\n\nSteps to reproduce:\n\nWhat happened:\n\nWhat I expected to happen:\n',
+  business_inquiry: 'Hi, I\'m a business owner and I\'d like to learn more about claiming or updating my listing.\n\nBusiness Name:\nLocation:\n',
+  general_feedback: 'Hi, I\'d like to share some general feedback:\n\n',
+  question: 'Hi, I have a question about the app:\n\n',
+  designer_contact: 'Hi Mark,\n\nI\'m getting in touch via the link in the app footer. I\'d like to talk about...\n\n'
+};
+
 const ContactScreen: React.FC<ContactScreenProps> = ({ onBack, onShowSupport, onShowPrivacy, prefill }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -17,11 +26,20 @@ const ContactScreen: React.FC<ContactScreenProps> = ({ onBack, onShowSupport, on
 
   useEffect(() => {
     if (prefill) {
-      setCategory(prefill.category || '');
-      setMessage(prefill.message || '');
+      const prefillCategory = prefill.category || '';
+      setCategory(prefillCategory);
+      // If a specific message is passed (like from error reporting), use it.
+      // Otherwise, populate from the template based on category.
+      setMessage(prefill.message || categoryTemplates[prefillCategory] || '');
     }
   }, [prefill]);
 
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newCategory = e.target.value;
+    setCategory(newCategory);
+    // When user manually changes category, update the message to the template
+    setMessage(categoryTemplates[newCategory] || '');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,7 +86,7 @@ const ContactScreen: React.FC<ContactScreenProps> = ({ onBack, onShowSupport, on
 
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl lg:max-w-3xl mx-auto">
       <div className="text-center">
         <h2 className="text-4xl font-extrabold text-white sm:text-5xl">
           Feedback & Contact
@@ -109,7 +127,7 @@ const ContactScreen: React.FC<ContactScreenProps> = ({ onBack, onShowSupport, on
             <select
                 id="category"
                 value={category}
-                onChange={(e) => setCategory(e.target.value)}
+                onChange={handleCategoryChange}
                 className="w-full bg-slate-800 border border-slate-600 text-white rounded-lg py-3 px-4 focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:opacity-50 appearance-none bg-no-repeat"
                 style={{
                     backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
@@ -125,6 +143,7 @@ const ContactScreen: React.FC<ContactScreenProps> = ({ onBack, onShowSupport, on
                 <option value="business_inquiry">Business Inquiry</option>
                 <option value="general_feedback">General Feedback</option>
                 <option value="question">Question</option>
+                <option value="designer_contact">Contact Designer</option>
             </select>
         </div>
          <div>

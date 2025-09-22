@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { getQuiz } from '../services/contentService';
 import type { QuizResult } from '../types';
@@ -57,7 +58,7 @@ const QuizScreen: React.FC<QuizScreenProps> = ({ onBack }) => {
     const currentQuestion = quiz.questions[currentQuestionIndex];
 
     return (
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl lg:max-w-3xl mx-auto">
             <div className="text-center">
                 <LightBulbIcon className="w-12 h-12 text-indigo-400 mx-auto mb-2" />
                 <h1 className="text-4xl font-extrabold text-white sm:text-5xl">{quiz.title}</h1>

@@ -1,4 +1,5 @@
 
+
 const CACHE_NAME = 'find-offlicence-near-me-v1';
 
 // All the local files that make up the app shell.
@@ -10,7 +11,6 @@ const ASSETS_TO_CACHE = [
   '/App.tsx',
   '/types.ts',
   '/services/contentService.ts',
-  '/services/config.ts',
   '/services/aiService.ts',
   '/components/AboutScreen.tsx',
   '/components/ArticleScreen.tsx',

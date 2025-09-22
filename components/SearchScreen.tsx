@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import ShareButton from './ShareButton';
 import MindfulDrinkingCta from './MindfulDrinkingCta';
@@ -88,12 +89,12 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ onError, onSearch, onShowMi
         <h1 className="text-4xl lg:text-5xl font-extrabold text-white leading-tight">
           Find out what's <span className="text-indigo-400">Near Me.</span>
         </h1>
-        <p className="mt-4 text-lg text-slate-300 max-w-2xl mx-auto">
+        <p className="mt-4 text-lg text-slate-300 max-w-2xl lg:max-w-3xl mx-auto">
           Your 24/7 guide to local services open now across the UK. Instantly find off-licences, takeaways, ATMs, and more.
         </p>
       </div>
 
-      <div className={`relative max-w-3xl mx-auto w-full mt-8 ${isShake ? 'animate-shake' : ''}`}>
+      <div className={`relative max-w-3xl lg:max-w-4xl mx-auto w-full mt-8 ${isShake ? 'animate-shake' : ''}`}>
         <div className="relative">
             <input
               ref={searchInputRef}
@@ -112,7 +113,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ onError, onSearch, onShowMi
                {isLoadingLocation ? (
                  <svg className="animate-spin h-6 w-6 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 * 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                  </svg>
                ) : (
                  <LocationIcon className="w-6 h-6" />
@@ -124,7 +125,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ onError, onSearch, onShowMi
 
       <div className="mt-8">
         <h2 className="text-xl font-bold text-white text-center mb-4">What are you looking for?</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 lg:gap-4 max-w-3xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 lg:gap-4 max-w-3xl lg:max-w-4xl mx-auto">
           {searchCategories.map((cat, index) => (
             <button
               key={cat.name}
@@ -139,7 +140,7 @@ const SearchScreen: React.FC<SearchScreenProps> = ({ onError, onSearch, onShowMi
         </div>
       </div>
       
-       <div className="mt-auto pt-12 space-y-6 max-w-3xl mx-auto w-full">
+       <div className="mt-auto pt-8 space-y-6 max-w-3xl lg:max-w-4xl mx-auto w-full">
          <div className="text-center text-sm text-slate-400">
             <p>
                 Business owner? <button onClick={onShowContact} className="underline text-indigo-400 hover:text-indigo-300">Claim or update your listing.</button>
