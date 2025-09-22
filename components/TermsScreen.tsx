@@ -18,12 +18,12 @@ const TermsScreen: React.FC<TermsScreenProps> = ({ onBack }) => {
 
       <div className="bg-slate-800/50 rounded-lg p-6 md:p-8 space-y-6 border border-slate-700">
         <p>
-          Welcome to Off Licence Near Me. By using this application ("app"), you agree to be bound by these Terms and Conditions. Please read them carefully.
+          Welcome to Find Offlicence Near Me. By using this application ("app"), you agree to be bound by these Terms and Conditions. Please read them carefully.
         </p>
         
         <h3 className="text-xl font-bold text-indigo-400">1. Service Description</h3>
         <p>
-          This app provides a search tool to find late-night services and offers access to informational resources and support contacts related to mindful drinking and mental health.
+          This app provides a search tool to find local services and offers access to informational resources and support contacts related to mindful drinking and mental health.
         </p>
 
         <h3 className="text-xl font-bold text-indigo-400">2. Third-Party Links & Content</h3>
@@ -38,12 +38,12 @@ const TermsScreen: React.FC<TermsScreenProps> = ({ onBack }) => {
         
         <h3 className="text-xl font-bold text-indigo-400">4. Intellectual Property Rights</h3>
         <p>
-          The app and its original content (excluding data from third-parties), features, and functionality are and will remain the exclusive property of Off Licence Near Me and its licensors. The app is protected by copyright, trademark, and other laws of both the United Kingdom and foreign countries.
+          The app and its original content (excluding data from third-parties), features, and functionality are and will remain the exclusive property of Find Offlicence Near Me and its licensors. The app is protected by copyright, trademark, and other laws of both the United Kingdom and foreign countries.
         </p>
         
         <h3 className="text-xl font-bold text-indigo-400">5. Limitation of Liability</h3>
         <p>
-          In no event shall Off Licence Near Me, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the app.
+          In no event shall Find Offlicence Near Me, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the app.
         </p>
 
         <h3 className="text-xl font-bold text-indigo-400">6. Changes to Terms</h3>

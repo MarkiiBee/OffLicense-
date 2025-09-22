@@ -1,23 +1,15 @@
-import React from 'react';
+
+import React, { useState, useMemo } from 'react';
 import type { SupportResource } from '../types';
 import ShareButton from './ShareButton';
+import SupportChat from './SupportChat';
+import { PhoneIcon, GlobeIcon, ChatBubbleIcon } from './Icons';
+import { createChatService } from '../services/aiService';
+import { getSupportResources } from '../services/contentService';
 
 interface SupportScreenProps {
-  resources: SupportResource[];
   onBack: () => void;
 }
-
-const PhoneIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-    </svg>
-);
-
-const GlobeIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h10a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.707 4.5l.523-1.046a1 1 0 011.742 0l.523 1.046m-2.788 0h2.788M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-);
 
 const SupportResourceCard: React.FC<{ resource: SupportResource }> = ({ resource }) => (
     <div className="bg-slate-800 rounded-lg p-5 border border-slate-700 flex flex-col h-full">
@@ -42,7 +34,20 @@ const SupportResourceCard: React.FC<{ resource: SupportResource }> = ({ resource
     </div>
 );
 
-const SupportScreen: React.FC<SupportScreenProps> = ({ resources, onBack }) => {
+const SupportScreen: React.FC<SupportScreenProps> = ({ onBack }) => {
+    const [isChatVisible, setIsChatVisible] = useState(false);
+    const resources = getSupportResources();
+    
+    // Create the chat service instance only when needed, and memoize it.
+    const chat = useMemo(() => {
+        try {
+            return createChatService();
+        } catch (error) {
+            console.error("Failed to create chat service:", error);
+            return null;
+        }
+    }, []);
+
     const immediateHelpNames = ['Samaritans', 'NHS Urgent Mental Health Helpline', 'National Suicide Prevention Helpline UK'];
     const immediateHelpResources = resources.filter(r => immediateHelpNames.includes(r.name));
     const otherResources = resources.filter(r => !immediateHelpNames.includes(r.name));
@@ -63,6 +68,27 @@ const SupportScreen: React.FC<SupportScreenProps> = ({ resources, onBack }) => {
             </div>
             <p className="mt-2 text-lg text-slate-300">Confidential services that can provide support and guidance.</p>
         </div>
+
+        {chat && (
+            <div className="bg-slate-800/50 p-6 rounded-lg border border-teal-500/50 mb-10 text-center">
+                <h3 className="text-2xl font-bold text-center text-teal-300 flex items-center justify-center gap-2">
+                    <ChatBubbleIcon className="w-7 h-7" />
+                    Beacon Assistant
+                </h3>
+                <p className="mt-2 text-slate-300">Your confidential AI guide for in-the-moment support. Available 24/7.</p>
+                
+                {isChatVisible ? (
+                    <SupportChat chat={chat} />
+                ) : (
+                    <button 
+                        onClick={() => setIsChatVisible(true)}
+                        className="mt-4 bg-teal-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-teal-600 transition-all duration-200 transform hover:scale-105"
+                    >
+                        Start Chat
+                    </button>
+                )}
+            </div>
+        )}
 
         <div className="bg-slate-800/50 p-6 rounded-lg border border-red-500/50 mb-10">
             <h3 className="text-2xl font-bold text-center text-red-400">Immediate, Confidential Help</h3>

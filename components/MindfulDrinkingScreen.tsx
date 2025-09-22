@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import type { DrinkLog } from '../types';
 import ShareButton from './ShareButton';
+import { LeafIcon, SparklesIcon, PlusIcon, MinusIcon, CogIcon, CloseIcon, BookOpenIcon } from './Icons';
 
 interface MindfulDrinkingScreenProps {
   onBack: () => void;
@@ -16,16 +17,6 @@ const getTodayDateString = () => {
     return today.toISOString().split('T')[0]; // YYYY-MM-DD format
 };
 
-// --- Reusable Icon Components ---
-const LeafIcon: React.FC<{ className?: string }> = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2c.63 0 1.25.07 1.85.204M12 22v-4m0-16C17.523 2 22 6.477 22 12c0 2.24-.73 4.32-2.007 6.003" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 2a6 6 0 00-6 6c0 4.418 4.477 10 6 12 1.523-2 6-7.582 6-12a6 6 0 00-6-6z" /></svg>);
-const SparklesIcon: React.FC<{ className?: string }> = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}><path fillRule="evenodd" d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM5.22 5.22a.75.75 0 011.06 0l1.06 1.06a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM2 10a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 012 10zm3.22 4.78a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm9.56-9.56a.75.75 0 011.06 0l1.06 1.06a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zM18 10a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 0118 10zm-3.22 4.78a.75.75 0 010 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zM10 18a.75.75 0 01.75-.75v-1.5a.75.75 0 01-1.5 0v1.5A.75.75 0 0110 18z" clipRule="evenodd" /></svg>);
-const PlusIcon: React.FC<{ className?: string }> = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" /></svg>);
-const MinusIcon: React.FC<{ className?: string }> = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}><path fillRule="evenodd" d="M4 10a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H4.75A.75.75 0 014 10z" clipRule="evenodd" /></svg>);
-const CogIcon: React.FC<{ className?: string }> = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}><path fillRule="evenodd" d="M7.83 11.006a3.5 3.5 0 105.122-4.512.75.75 0 00-1.061 1.06 2 2 0 11-2.828 2.828.75.75 0 001.06 1.061zM10.239 3.823a.75.75 0 00.34-.925l.214-1.07a.75.75 0 011.365.272l-.214 1.07a.75.75 0 00.925.34l1.056-.27a.75.75 0 01.87.87l-.27 1.056a.75.75 0 00.34.925l1.07.214a.75.75 0 01.272 1.365l-1.07.214a.75.75 0 00-.34.925l.27 1.056a.75.75 0 01-.87.87l-1.056-.27a.75.75 0 00-.925.34l-.214 1.07a.75.75 0 01-1.365.272l.214-1.07a.75.75 0 00-.925-.34l-1.056.27a.75.75 0 01-.87-.87l.27-1.056a.75.75 0 00-.34-.925l-1.07-.214a.75.75 0 01-.272-1.365l1.07-.214a.75.75 0 00.34-.925l-.27-1.056a.75.75 0 01.87-.87l1.056.27a.75.75 0 00.925-.34zM10 5.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z" clipRule="evenodd" /></svg>);
-const CloseIcon: React.FC<{ className?: string }> = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}><path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" /></svg>);
-const BookOpenIcon: React.FC<{ className?: string }> = ({ className }) => (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>);
-
-// --- Main Component ---
 const MindfulDrinkingScreen: React.FC<MindfulDrinkingScreenProps> = ({ onBack, onShowArticle, onShowQuiz }) => {
     const [log, setLog] = useState<DrinkLog>({});
     const [settings, setSettings] = useState({ avgDrinkPrice: 5.00 });
@@ -166,7 +157,6 @@ const MindfulDrinkingScreen: React.FC<MindfulDrinkingScreenProps> = ({ onBack, o
         </div>
     );
     
-    // --- Modal Components ---
     const CravingToolModal = () => {
       const [timer, setTimer] = useState(60);
       
@@ -229,7 +219,6 @@ const MindfulDrinkingScreen: React.FC<MindfulDrinkingScreenProps> = ({ onBack, o
       );
     };
 
-    // --- Render Component ---
     return (
       <div className="max-w-4xl mx-auto">
           <CravingToolModal />
@@ -240,7 +229,7 @@ const MindfulDrinkingScreen: React.FC<MindfulDrinkingScreenProps> = ({ onBack, o
                 <h2 className="text-3xl font-bold text-white">Mindful Drinking Hub</h2>
                 <ShareButton
                     shareData={{
-                        title: 'Mindful Drinking Hub',
+                        title: 'Mindful Drinking Hub | Find Offlicence Near Me',
                         text: 'I found this useful hub with a private tracker and tools for mindful drinking.',
                         url: `${window.location.origin}?view=mindful_drinking`
                     }}

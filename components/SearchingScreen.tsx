@@ -1,10 +1,31 @@
+
 import React from 'react';
 
 interface SearchingScreenProps {
     category: string;
 }
 
+const getCategoryDescription = (category: string): string => {
+    switch (category) {
+        case 'Off-licences':
+            return "Searching for nearby off-licences, convenience stores, and supermarkets that are open right now.";
+        case 'Takeaways':
+            return "Locating takeaways, restaurants, and food delivery services open near you.";
+        case 'ATMs':
+            return "Finding cash machines and ATMs that are currently operational.";
+        case 'Hotels':
+            return "Checking for hotels and accommodations with immediate availability.";
+        case 'Flights':
+            return "Looking for last-minute flights departing today from nearby airports.";
+        case 'Rides':
+            return "Finding local taxi services and ride-sharing options for you.";
+        default:
+            return "We're opening Google Maps with the latest results.";
+    }
+}
+
 const SearchingScreen: React.FC<SearchingScreenProps> = ({ category }) => {
+  const description = getCategoryDescription(category);
   return (
     <div className="flex flex-col items-center justify-center text-center h-full">
       <svg className="animate-spin h-12 w-12 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -12,7 +33,7 @@ const SearchingScreen: React.FC<SearchingScreenProps> = ({ category }) => {
         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
       <h2 className="mt-6 text-3xl font-bold text-white">Finding {category} for you...</h2>
-      <p className="mt-2 text-lg text-slate-300">We're opening Google Maps with the latest results.</p>
+      <p className="mt-2 text-lg text-slate-300 max-w-md mx-auto">{description}</p>
     </div>
   );
 };

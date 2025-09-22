@@ -1,6 +1,6 @@
 {
-  "name": "Off Licence Near Me",
-  "description": "Find late-night services like food, shops & transport instantly. Includes a private hub with mindful drinking resources & confidential mental wellness support.",
+  "name": "Find Offlicence Near Me",
+  "description": "Find Offlicence Near Me. Your 24/7 UK guide to local off-licences, takeaways, ATMs, and hotels, plus a private hub for mindful drinking resources.",
   "requestFramePermissions": [
     "geolocation"
   ]

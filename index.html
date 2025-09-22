@@ -5,24 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- SEO - Primary Meta Tags -->
-    <title>Off Licence Near Me</title>
-    <meta name="description" content="Find late-night services like food, shops &amp; transport instantly. Includes a private hub with mindful drinking resources &amp; confidential mental wellness support." />
+    <title>Find Offlicence Near Me | 24/7 UK Off-Licence Finder</title>
+    <meta name="description" content="Find Offlicence Near Me. Your 24/7 UK guide to local off-licences, takeaways, ATMs, and hotels, plus a private hub for mindful drinking resources." />
     <!-- IMPORTANT: Replace YOUR_DOMAIN.com with your actual domain name -->
-    <link rel="canonical" href="https://www.YOUR_DOMAIN.com/" /> 
+    <link rel="canonical" href="https://www.findofflicencenearme.co.uk/" /> 
 
     <!-- SEO - Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.YOUR_DOMAIN.com/" />
-    <meta property="og:title" content="Off Licence Near Me - Find Late-Night Shops & Support" />
-    <meta property="og:description" content="Find late-night services like food, shops &amp; transport instantly. Includes a private hub with mindful drinking resources &amp; confidential mental wellness support." />
-    <meta property="og:image" content="https://www.YOUR_DOMAIN.com/social-share-image.png" />
+    <meta property="og:url" content="https://www.findofflicencenearme.co.uk/" />
+    <meta property="og:title" content="Find Offlicence Near Me | 24/7 UK Off-Licence Finder" />
+    <meta property="og:description" content="Find Offlicence Near Me. Your 24/7 UK guide to local off-licences, takeaways, ATMs, and hotels, plus a private hub for mindful drinking resources." />
+    <meta property="og:image" content="https://www.findofflicencenearme.co.uk/social-share-image.png" />
 
     <!-- SEO - Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://www.YOUR_DOMAIN.com/" />
-    <meta property="twitter:title" content="Off Licence Near Me - Find Late-Night Shops & Support" />
-    <meta property="twitter:description" content="Find late-night services like food, shops &amp; transport instantly. Includes a private hub with mindful drinking resources &amp; confidential mental wellness support." />
-    <meta property="twitter:image" content="https://www.YOUR_DOMAIN.com/social-share-image.png" />
+    <meta property="twitter:url" content="https://www.findofflicencenearme.co.uk/" />
+    <meta property="twitter:title" content="Find Offlicence Near Me | 24/7 UK Off-Licence Finder" />
+    <meta property="twitter:description" content="Find Offlicence Near Me. Your 24/7 UK guide to local off-licences, takeaways, ATMs, and hotels, plus a private hub for mindful drinking resources." />
+    <meta property="twitter:image" content="https://www.findofflicencenearme.co.uk/social-share-image.png" />
 
     <!-- Icons and Manifest -->
     <meta name="theme-color" content="#1e293b" />
@@ -53,7 +53,8 @@
           "react": "https://aistudiocdn.com/react@^19.1.1",
           "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
           "react/": "https://aistudiocdn.com/react@^19.1.1/",
-          "@google/genai": "https://aistudiocdn.com/@google/genai@^1.20.0"
+          "@google/genai": "https://aistudiocdn.com/@google/genai@^1.20.0",
+          "openai": "https://cdn.jsdelivr.net/npm/openai@4.53.2/browser.mjs"
         }
       }
     </script>
@@ -103,6 +104,13 @@
       .animate-breathe {
         animation: breathe 5s ease-in-out infinite;
       }
+      @keyframes subtle-pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+      .animate-subtle-pulse {
+        animation: subtle-pulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+      }
       .sr-only {
         position: absolute;
         width: 1px;
@@ -125,7 +133,8 @@
       }
     </style>
   </head>
-  <body class="bg-gray-900 bg-gradient-to-br from-gray-900 to-slate-900">
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

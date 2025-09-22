@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
 import { getQuiz } from '../services/contentService';
 import type { QuizResult } from '../types';
+import { CheckCircleIcon, LightBulbIcon } from './Icons';
 
 interface QuizScreenProps {
   onBack: () => void;
 }
-
-const CheckCircleIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" /></svg>
-);
-const LightBulbIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}><path d="M10 2a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 2zM5.05 3.636a.75.75 0 011.06 1.06l-1.06 1.06a.75.75 0 01-1.06-1.06l1.06-1.06zM2 10a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 012 10zm3.05 5.304a.75.75 0 011.06-1.06l1.06 1.06a.75.75 0 01-1.06 1.06l-1.06-1.06zM15.95 3.636a.75.75 0 011.06 1.06l-1.06 1.06a.75.75 0 11-1.06-1.06l1.06-1.06zM18 10a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5A.75.75 0 0118 10zm-3.05 5.304a.75.75 0 011.06-1.06l1.06 1.06a.75.75 0 01-1.06 1.06l-1.06-1.06zM10 17a.75.75 0 01.75-.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 0110 17zM12 10a2 2 0 11-4 0 2 2 0 014 0z" /><path fillRule="evenodd" d="M10 2c3.314 0 6 2.686 6 6a6 6 0 11-12 0 6 6 0 016-6zM4.38 8.62a4.5 4.5 0 118.24 0 4.5 4.5 0 01-8.24 0z" clipRule="evenodd" /></svg>
-);
-
 
 const QuizScreen: React.FC<QuizScreenProps> = ({ onBack }) => {
     const quiz = getQuiz();

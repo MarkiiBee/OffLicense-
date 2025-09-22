@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import type { Article } from '../types';
 import ShareButton from './ShareButton';
 import { getArticles } from '../services/contentService';
-
+import { PlayIcon, PauseIcon, StopIcon } from './Icons';
 
 interface ArticleScreenProps {
   article: Article;
@@ -10,19 +10,18 @@ interface ArticleScreenProps {
   onShowArticle: (slug: string) => void;
 }
 
-// --- Reusable Icon Components ---
-const PlayIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" /></svg>
-);
-const PauseIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}><path d="M5.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75A.75.75 0 007.25 3h-1.5zM12.75 3a.75.75 0 00-.75.75v12.5c0 .414.336.75.75.75h1.5a.75.75 0 00.75-.75V3.75a.75.75 0 00-.75-.75h-1.5z" /></svg>
-);
-const StopIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}><path d="M5 3.5A1.5 1.5 0 016.5 2h7A1.5 1.5 0 0115 3.5v13A1.5 1.5 0 0113.5 18h-7A1.5 1.5 0 015 16.5v-13z" /></svg>
-);
-
 const ArticleStructuredData: React.FC<{ article: Article }> = ({ article }) => {
-    const schema = { "@context": "https://schema.org", "@type": "Article", "headline": article.title, "description": article.summary, "author": { "@type": "Organization", "name": "Off Licence Near Me" }, "publisher": { "@type": "Organization", "name": "Off Licence Near Me", "logo": { "@type": "ImageObject", "url": "/apple-touch-icon.png" } }, "datePublished": new Date().toISOString(), "mainEntityOfPage": { "@type": "WebPage", "@id": `https://example.com/resources/${article.slug}` } };
+    const domain = "https://www.findofflicencenearme.co.uk";
+    const schema = { 
+        "@context": "https://schema.org", 
+        "@type": "Article", 
+        "headline": article.title, 
+        "description": article.summary, 
+        "author": { "@type": "Organization", "name": "Find Offlicence Near Me" }, 
+        "publisher": { "@type": "Organization", "name": "Find Offlicence Near Me", "logo": { "@type": "ImageObject", "url": `${domain}/apple-touch-icon.png` } }, 
+        "datePublished": new Date().toISOString(), 
+        "mainEntityOfPage": { "@type": "WebPage", "@id": `${domain}/?view=article&slug=${article.slug}` } 
+    };
     return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
 };
 

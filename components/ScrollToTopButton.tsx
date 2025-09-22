@@ -1,17 +1,10 @@
 import React, { useState, useEffect } from 'react';
-
-const ArrowUpIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className={className}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
-    </svg>
-);
+import { ArrowUpIcon } from './Icons';
 
 const ScrollToTopButton: React.FC = () => {
     const [isVisible, setIsVisible] = useState(false);
 
     const toggleVisibility = () => {
-        // Using window.scrollY is a modern and reliable way to get scroll position.
-        // A threshold of 300px is a good standard to prevent it from showing too early.
         if (window.scrollY > 300) {
             setIsVisible(true);
         } else {

@@ -1,6 +1,5 @@
-
-
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { ErrorIcon } from './Icons';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -11,35 +10,27 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-const ErrorIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-    </svg>
-);
-
-
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  // FIX: Initialize state as a class property. This is a modern and robust
-  // way to set initial state in React class components and resolves issues
-  // where TypeScript might not recognize `this.state` and `this.props` correctly.
-  state: ErrorBoundaryState = {
-    hasError: false,
-    error: null,
-  };
+  // Fix: Switched to constructor-based state initialization to ensure `this.props` is correctly
+  // available on the component instance, resolving a TypeScript error.
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = {
+      hasError: false,
+      error: null,
+    };
+  }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    // Update state so the next render will show the fallback UI.
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log the error to an error reporting service
     console.error("ErrorBoundary caught an error:", error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
-      // Render a custom fallback UI
       return (
         <div className="flex flex-col min-h-screen bg-slate-900 text-gray-200 font-sans justify-center items-center p-4">
             <div className="max-w-md text-center">

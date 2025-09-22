@@ -1,4 +1,5 @@
-const CACHE_NAME = 'off-licence-near-me-v1';
+
+const CACHE_NAME = 'find-offlicence-near-me-v1';
 
 // All the local files that make up the app shell.
 const ASSETS_TO_CACHE = [
@@ -8,8 +9,9 @@ const ASSETS_TO_CACHE = [
   '/metadata.json',
   '/App.tsx',
   '/types.ts',
-  '/services/autocompleteService.ts',
   '/services/contentService.ts',
+  '/services/config.ts',
+  '/services/aiService.ts',
   '/components/AboutScreen.tsx',
   '/components/ArticleScreen.tsx',
   '/components/BottomNav.tsx',
@@ -18,11 +20,11 @@ const ASSETS_TO_CACHE = [
   '/components/ErrorDisplay.tsx',
   '/components/Footer.tsx',
   '/components/Header.tsx',
+  '/components/Icons.tsx',
   '/components/LoadingSpinner.tsx',
   '/components/MindfulDrinkingCta.tsx',
   '/components/MindfulDrinkingScreen.tsx',
   '/components/NewsletterSignup.tsx',
-  '/components/PinnedHelplines.tsx',
   '/components/PrivacyScreen.tsx',
   '/components/QuizScreen.tsx',
   '/components/ResourcesScreen.tsx',
@@ -33,7 +35,6 @@ const ASSETS_TO_CACHE = [
   '/components/SupportChat.tsx',
   '/components/SupportScreen.tsx',
   '/components/TermsScreen.tsx',
-  '/components/WelcomeModal.tsx',
 ];
 
 // Install event: opens a cache and adds the app shell files to it.
@@ -41,10 +42,23 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('Opened cache and caching app shell');
-      return cache.addAll(ASSETS_TO_CACHE);
+      // Use no-cache to ensure we get the freshest files from the server
+      const cachePromises = ASSETS_TO_CACHE.map(asset => {
+        const request = new Request(asset, { cache: 'reload' });
+        return fetch(request).then(response => {
+          if (!response.ok) {
+            // Don't kill the service worker if a single file fails
+            console.error(`Failed to fetch and cache ${asset}: ${response.statusText}`);
+            return Promise.resolve();
+          }
+          return cache.put(asset, response);
+        });
+      });
+      return Promise.all(cachePromises);
     })
   );
 });
+
 
 // Activate event: cleans up old caches.
 self.addEventListener('activate', (event) => {
@@ -82,7 +96,7 @@ self.addEventListener('fetch', (event) => {
       return fetch(event.request).then((networkResponse) => {
         // We shouldn't cache API calls to the generative model itself
         // as the responses are dynamic and we don't want to serve stale data.
-        if (event.request.url.includes('generativelanguage.googleapis.com')) {
+        if (event.request.url.includes('generativelanguage.googleapis.com') || event.request.url.includes('api.openai.com')) {
           return networkResponse;
         }
 

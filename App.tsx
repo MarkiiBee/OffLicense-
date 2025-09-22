@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useMemo } from 'react';
 import type { SupportResource, Article } from './types';
-import { View } from './types';
+import { View, viewFromString, viewToString } from './types';
 import { getArticleBySlug, getSupportResources } from './services/contentService';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -9,7 +9,6 @@ import LoadingSpinner from './components/LoadingSpinner';
 import ErrorBoundary from './components/ErrorBoundary';
 import BottomNav from './components/BottomNav';
 import ErrorDisplay from './components/ErrorDisplay';
-import WelcomeModal from './components/WelcomeModal';
 import ScrollToTopButton from './components/ScrollToTopButton';
 
 // Lazy load screen components for better performance
@@ -25,149 +24,105 @@ const QuizScreen = React.lazy(() => import('./components/QuizScreen'));
 const MindfulDrinkingScreen = React.lazy(() => import('./components/MindfulDrinkingScreen'));
 const SearchingScreen = React.lazy(() => import('./components/SearchingScreen'));
 
-const WELCOME_MODAL_KEY = 'night-owl-nav-welcome-seen';
-
 const App: React.FC = () => {
-  const [history, setHistory] = useState<View[]>([View.SEARCH]);
-  const view = history[history.length - 1];
-
+  const [currentUrl, setCurrentUrl] = useState(window.location.href);
   const [supportResources] = useState<SupportResource[]>(() => getSupportResources());
-  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [error, setError] = useState<{ message: string; details?: any } | null>(null);
-  const [contentKey, setContentKey] = useState(0); // Used to re-trigger animation
-  const [showWelcome, setShowWelcome] = useState(false);
+  const [contentKey, setContentKey] = useState(0);
   const [contactPrefill, setContactPrefill] = useState<{ category?: string; message?: string } | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [searchConfig, setSearchConfig] = useState<{ url: string; category: string } | null>(null);
-  
-  // Load welcome modal status on initial mount
-  useEffect(() => {
-    try {
-        const welcomeSeen = localStorage.getItem(WELCOME_MODAL_KEY);
-        if (!welcomeSeen) {
-            setShowWelcome(true);
-        }
-    } catch (e) {
-        console.error("Failed to read from localStorage", e);
+
+  const { view, slug } = useMemo(() => {
+    const params = new URL(currentUrl).searchParams;
+    const viewParam = viewFromString(params.get('view')) || View.SEARCH;
+    const slugParam = params.get('slug') || null;
+    return { view: viewParam, slug: slugParam };
+  }, [currentUrl]);
+
+  const selectedArticle = useMemo(() => {
+    if (view === View.ARTICLE && slug) {
+      return getArticleBySlug(slug);
     }
+    return null;
+  }, [view, slug]);
+
+  useEffect(() => {
+    const handleLocationChange = () => {
+      setCurrentUrl(window.location.href);
+    };
+
+    window.addEventListener('popstate', handleLocationChange);
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+    };
   }, []);
 
-
-  const handleWelcomeDismiss = () => {
-    setShowWelcome(false);
-    try {
-        localStorage.setItem(WELCOME_MODAL_KEY, 'true');
-        // Smoothly scroll to the top of the page after the modal is dismissed
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    } catch (e) {
-        console.error("Failed to save welcome modal status to localStorage", e);
-    }
-  };
-  
   useEffect(() => {
     if (isSearching && searchConfig) {
-        const timer = setTimeout(() => {
-            window.open(searchConfig.url, '_blank', 'noopener,noreferrer');
-            setIsSearching(false);
-            setSearchConfig(null);
-        }, 2500); // 2.5 second delay for a smoother UX
+      const timer = setTimeout(() => {
+        window.open(searchConfig.url, '_blank', 'noopener,noreferrer');
+        setIsSearching(false);
+        setSearchConfig(null);
+      }, 2500);
 
-        return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
     }
   }, [isSearching, searchConfig]);
 
-
-  // Handle deep links from shared URLs on initial mount
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const viewParam = params.get('view');
-    const slugParam = params.get('slug');
-
-    if (viewParam) {
-      let initialHistory: View[] = [View.SEARCH];
-      switch(viewParam) {
-          case 'article':
-              if (slugParam) {
-                  const article = getArticleBySlug(slugParam);
-                  if (article) {
-                      setSelectedArticle(article);
-                      // Provide a logical back-navigation path for the user
-                      initialHistory = [View.SEARCH, View.RESOURCES, View.ARTICLE];
-                  }
-              }
-              break;
-          case 'support':
-              initialHistory = [View.SEARCH, View.SUPPORT];
-              break;
-          case 'resources':
-              initialHistory = [View.SEARCH, View.RESOURCES];
-              break;
-          case 'mindful_drinking':
-              initialHistory = [View.SEARCH, View.RESOURCES, View.MINDFUL_DRINKING];
-              break;
-      }
-      if (initialHistory.length > 1) {
-          setHistory(initialHistory);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    // Update document title and trigger animations on view change
     switch (view) {
-      case View.SEARCH: document.title = 'Find Late-Night Shops, Food & More | Off Licence Near Me'; break;
-      case View.SUPPORT: document.title = 'Addiction & Mental Health Support | Off Licence Near Me'; break;
-      case View.CONTACT: document.title = 'Contact Us | Off Licence Near Me'; break;
-      case View.ABOUT: document.title = 'About Us | Off Licence Near Me'; break;
-      case View.PRIVACY: document.title = 'Privacy Policy | Off Licence Near Me'; break;
-      case View.TERMS: document.title = 'Terms & Conditions | Off Licence Near Me'; break;
-      case View.RESOURCES: document.title = 'Helpful Resources | Off Licence Near Me'; break;
-      case View.MINDFUL_DRINKING: document.title = 'Mindful Drinking Hub | Off Licence Near Me'; break;
-      case View.ARTICLE: document.title = `${selectedArticle?.title || 'Resource'} | Off Licence Near Me`; break;
-      case View.QUIZ: document.title = 'Mindful Drinking Quiz | Off Licence Near Me'; break;
-      default: document.title = 'Off Licence Near Me';
+      case View.SEARCH: document.title = 'Find Offlicence Near Me | 24/7 UK Off-Licence Finder'; break;
+      case View.SUPPORT: document.title = 'Addiction & Mental Health Support | Find Offlicence Near Me'; break;
+      case View.CONTACT: document.title = 'Contact Us | Find Offlicence Near Me'; break;
+      case View.ABOUT: document.title = 'About Us | Find Offlicence Near Me'; break;
+      case View.PRIVACY: document.title = 'Privacy Policy | Find Offlicence Near Me'; break;
+      case View.TERMS: document.title = 'Terms & Conditions | Find Offlicence Near Me'; break;
+      case View.RESOURCES: document.title = 'Helpful Resources | Find Offlicence Near Me'; break;
+      case View.MINDFUL_DRINKING: document.title = 'Mindful Drinking Hub | Find Offlicence Near Me'; break;
+      case View.ARTICLE: document.title = `${selectedArticle?.title || 'Resource'} | Find Offlicence Near Me`; break;
+      case View.QUIZ: document.title = 'Mindful Drinking Quiz | Find Offlicence Near Me'; break;
     }
     setContentKey(prev => prev + 1);
   }, [view, selectedArticle]);
-  
+
   const handleNavigateAwayFromContact = () => {
     if (view === View.CONTACT) {
       setContactPrefill(null);
     }
   };
 
-  const navigateTo = (newView: View) => {
-    if (view === newView) return;
+  const navigateTo = (newView: View, newSlug: string | null = null) => {
+    const currentSlug = new URL(currentUrl).searchParams.get('slug');
+    if (view === newView && newSlug === currentSlug) return;
+    
     handleNavigateAwayFromContact();
-    setHistory(prev => [...prev, newView]);
+
+    let urlPath = `?view=${viewToString(newView)}`;
+    if (newSlug) {
+      urlPath += `&slug=${newSlug}`;
+    }
+
+    window.history.pushState({ view: newView, slug: newSlug }, '', urlPath);
+    setCurrentUrl(window.location.href);
     setError(null);
     window.scrollTo(0, 0);
   };
   
   const handleBack = () => {
-    if (history.length <= 1) return;
-    handleNavigateAwayFromContact();
-    setHistory(prev => prev.slice(0, -1));
-    setError(null);
-    window.scrollTo(0, 0);
+    window.history.back();
   };
   
   const goHome = () => {
     handleNavigateAwayFromContact();
-    setHistory([View.SEARCH]);
+    window.history.pushState({ view: View.SEARCH }, '', '/');
+    setCurrentUrl(window.location.href);
     setError(null);
     window.scrollTo(0, 0);
   };
 
   const handleShowArticle = (slug: string) => {
-    const article = getArticleBySlug(slug);
-    if (article) {
-      setSelectedArticle(article);
-      navigateTo(View.ARTICLE);
-    }
+    navigateTo(View.ARTICLE, slug);
   }
   
   const handleShowQuiz = () => {
@@ -175,10 +130,9 @@ const App: React.FC = () => {
   };
 
   const handleSearch = (url: string, category: string) => {
-      setSearchConfig({ url, category });
-      setIsSearching(true);
+    setSearchConfig({ url, category });
+    setIsSearching(true);
   };
-
 
   const handleReportProblem = (errorData: { message: string; details?: any }) => {
     const { message, details } = errorData;
@@ -186,23 +140,23 @@ const App: React.FC = () => {
     const prefillMessage = `Hi, I encountered an error.\n\nError Message:\n${message}\n\nTechnical Details:\n${detailsString}\n\nSteps to reproduce (optional):\n`;
 
     setContactPrefill({
-        category: 'bug_report',
-        message: prefillMessage
+      category: 'bug_report',
+      message: prefillMessage
     });
     navigateTo(View.CONTACT);
   };
 
   const handleShowBusinessContact = () => {
     setContactPrefill({
-        category: 'business_inquiry',
-        message: 'Hi, I\'m a business owner and I\'d like to learn more about claiming or updating my listing on your app.\n\nBusiness Name:\nLocation:\n'
+      category: 'business_inquiry',
+      message: 'Hi, I\'m a business owner and I\'d like to learn more about claiming or updating my listing on your app.\n\nBusiness Name:\nLocation:\n'
     });
     navigateTo(View.CONTACT);
   };
 
   const renderContent = () => {
     if (isSearching && searchConfig) {
-        return <SearchingScreen category={searchConfig.category} />;
+      return <SearchingScreen category={searchConfig.category} />;
     }
       
     if (error) {
@@ -220,19 +174,15 @@ const App: React.FC = () => {
     switch (view) {
       case View.SEARCH:
         return (
-          <>
-            {showWelcome && <WelcomeModal onDismiss={handleWelcomeDismiss} />}
             <SearchScreen 
               onError={setError} 
               onSearch={handleSearch} 
               onShowMindfulDrinking={() => navigateTo(View.MINDFUL_DRINKING)}
               onShowContact={handleShowBusinessContact}
             />
-          </>
         );
       case View.SUPPORT:
         return <SupportScreen 
-                  resources={supportResources} 
                   onBack={handleBack} 
                 />;
       case View.CONTACT:
@@ -257,12 +207,7 @@ const App: React.FC = () => {
       case View.QUIZ:
         return <QuizScreen onBack={handleBack} />;
       default:
-        return <SearchScreen 
-                  onError={setError} 
-                  onSearch={handleSearch} 
-                  onShowMindfulDrinking={() => navigateTo(View.MINDFUL_DRINKING)}
-                  onShowContact={handleShowBusinessContact}
-                />;
+        return <SearchScreen onError={setError} onSearch={handleSearch} onShowMindfulDrinking={() => navigateTo(View.MINDFUL_DRINKING)} onShowContact={handleShowBusinessContact}/>;
     }
   };
 
@@ -293,7 +238,7 @@ const App: React.FC = () => {
         
         <BottomNav 
           currentView={view} 
-          setView={navigateTo}
+          navigateTo={navigateTo}
         />
         <ScrollToTopButton />
       </div>

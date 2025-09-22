@@ -1,24 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { Chat, ChatMessage } from '../types';
+import { SendIcon } from './Icons';
 
 interface SupportChatProps {
     chat: Chat;
 }
 
-const SendIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className}>
-      <path d="M3.105 2.289a.75.75 0 00-.826.95l1.414 4.949a.75.75 0 00.95.54l3.172-1.269a.75.75 0 01.956.956l-1.269 3.172a.75.75 0 00.54.95l4.949 1.414a.75.75 0 00.95-.826l-1.414-4.949a.75.75 0 00-.54-.95l-3.172 1.269a.75.75 0 01-.956-.956l1.269-3.172a.75.75 0 00-.54-.95L3.105 2.289z" />
-    </svg>
-);
-
 const SELF_HARM_KEYWORDS = ['suicide', 'kill myself', 'want to die', 'end my life', 'self harm', 'self-harm', 'hurting myself'];
 
-
-// This function finds phone numbers in text and wraps them in clickable links.
-// FIX: Changed JSX.Element to React.ReactElement to resolve "Cannot find namespace 'JSX'".
-// This uses an explicitly imported type from React, making it more robust.
 const formatMessageText = (text: string): (string | React.ReactElement)[] => {
-    // Regex to find UK phone numbers, including special numbers like 111 and 116 123
     const phoneRegex = /(\b(?:0[1-9]\d{1,2}[ -]?\d{3}[ -]?\d{3,4}|111|116[ -]?123|999)\b)/g;
     const parts = text.split(phoneRegex);
 
@@ -54,7 +44,6 @@ const SupportChat: React.FC<SupportChatProps> = ({ chat }) => {
         const trimmedInput = input.trim();
         if (!trimmedInput || isLoading) return;
 
-        // Client-side safety check
         const containsKeyword = SELF_HARM_KEYWORDS.some(keyword => trimmedInput.toLowerCase().includes(keyword));
         const userMessage: ChatMessage = { role: 'user', text: trimmedInput };
 
@@ -65,10 +54,11 @@ const SupportChat: React.FC<SupportChatProps> = ({ chat }) => {
             };
             setMessages(prev => [...prev, userMessage, safetyMessage]);
             setInput('');
-            return; // Stop before calling the API
+            return;
         }
 
-        setMessages(prev => [...prev, userMessage]);
+        const currentMessages = [...messages, userMessage];
+        setMessages(currentMessages);
         setInput('');
         setIsLoading(true);
         setError(null);
@@ -89,8 +79,17 @@ const SupportChat: React.FC<SupportChatProps> = ({ chat }) => {
             }
         } catch (err) {
             console.error("Chat error:", err);
-            setError("Sorry, I'm having trouble connecting right now. Please try again later.");
-             setMessages(prev => prev.slice(0, -2)); // Remove user message and the "..." placeholder
+            const errorMessage = "Sorry, I'm having trouble connecting right now. Please try again later or contact one of the helplines directly.";
+            setError(errorMessage);
+            setMessages(prev => {
+                const newMessages = [...prev];
+                const lastMessage = newMessages[newMessages.length - 1];
+                if (lastMessage.role === 'model' && lastMessage.text === '...') {
+                    // Replace the "..." with an error message in the chat
+                    newMessages[newMessages.length - 1] = { role: 'model', text: errorMessage };
+                }
+                return newMessages;
+            });
         } finally {
             setIsLoading(false);
         }
@@ -98,7 +97,7 @@ const SupportChat: React.FC<SupportChatProps> = ({ chat }) => {
 
     return (
         <div className="mt-4 border-t border-teal-500/50 pt-4">
-            <div className="bg-slate-900/70 rounded-lg p-4 max-h-80 overflow-y-auto space-y-4">
+            <div className="bg-slate-900/70 rounded-lg p-4 max-h-80 overflow-y-auto space-y-4 no-scrollbar">
                 {messages.length === 0 && (
                     <div className="text-center text-slate-400 p-4">
                         <p>You can ask things like:</p>
@@ -114,7 +113,6 @@ const SupportChat: React.FC<SupportChatProps> = ({ chat }) => {
                         </div>
                     </div>
                 ))}
-                {error && <div className="text-center text-red-400 p-2">{error}</div>}
                 <div ref={messagesEndRef} />
             </div>
             <form onSubmit={handleSubmit} className="mt-4 flex items-center gap-2">

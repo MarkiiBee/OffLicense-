@@ -1,15 +1,9 @@
 import React from 'react';
+import { LeafIcon } from './Icons';
 
 interface MindfulDrinkingCtaProps {
     onShowMindfulDrinking: () => void;
 }
-
-const LeafIcon: React.FC<{ className?: string }> = ({ className }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2c.63 0 1.25.07 1.85.204M12 22v-4m0-16C17.523 2 22 6.477 22 12c0 2.24-.73 4.32-2.007 6.003" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a6 6 0 00-6 6c0 4.418 4.477 10 6 12 1.523-2 6-7.582 6-12a6 6 0 00-6-6z" />
-    </svg>
-);
 
 const MindfulDrinkingCta: React.FC<MindfulDrinkingCtaProps> = ({ onShowMindfulDrinking }) => {
     return (

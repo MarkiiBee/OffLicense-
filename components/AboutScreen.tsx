@@ -19,17 +19,17 @@ const AboutScreen: React.FC<AboutScreenProps> = ({ onBack }) => {
       <div className="bg-slate-800/50 rounded-lg p-6 md:p-8 space-y-6 border border-slate-700">
         <h3 className="text-2xl font-bold text-indigo-400">Why We Exist</h3>
         <p>
-          Late nights can be complicated. Whether you're looking for an open shop, a meal after a long day, or a last-minute travel booking, finding what you need can be a challenge. We created this app to be your reliable assistant during those moments, offering a clear and simple way to find solutions.
+          Life can be complicated. Whether you're looking for an open shop, a meal after a long day, or a last-minute travel booking, finding what you need can be a challenge. We created this app to be your reliable assistant for those moments, offering a clear and simple way to find solutions, 24/7.
         </p>
         <p>
-          We also understand that these late-night searches can sometimes happen during moments of vulnerability. Our goal is to meet you where you are, without judgment. That's why we've integrated immediate, confidential access to support resources directly into the app, acknowledging that sometimes, the best choice is a different path.
+          We also understand that these searches can sometimes happen during moments of vulnerability. Our goal is to meet you where you are, without judgment. That's why we've integrated immediate, confidential access to support resources directly into the app, acknowledging that sometimes, the best choice is a different path.
         </p>
         
         <h3 className="text-2xl font-bold text-indigo-400">Two Paths, One App</h3>
         <p>
-          <strong>1. Find What You Need:</strong> A straightforward, powerful search hub to help you find late-night services, including:
+          <strong>1. Find What You Need:</strong> A straightforward, powerful search hub to help you find services open now, including:
           <ul className="list-disc list-inside mt-2 pl-4 space-y-1">
-            <li>Late-night off-licences and convenience stores</li>
+            <li>Off-licences and convenience stores</li>
             <li>Food delivery to your door</li>
             <li>Nearby ATMs and cashpoints</li>
             <li>Last-minute hotel and flight bookings</li>

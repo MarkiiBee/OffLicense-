@@ -18,33 +18,32 @@ const PrivacyScreen: React.FC<PrivacyScreenProps> = ({ onBack }) => {
 
       <div className="bg-slate-800/50 rounded-lg p-6 md:p-8 space-y-6 border border-slate-700">
         <p>
-          Your privacy is important to us. This policy explains what information we collect and how we use it.
+          Your privacy is important to us. This policy explains what information we collect and how we use it. We've designed the app to be as private as possible.
         </p>
         
         <h3 className="text-xl font-bold text-indigo-400">Information We Collect</h3>
         <ul className="list-disc list-inside space-y-2 pl-4">
-          <li>
-            <strong>Search Queries:</strong> The locations you manually type into the search bar are sent to our backend to find results. We do not link these searches to any personal information.
-          </li>
-          <li>
-            <strong>Saved Locations:</strong> If you use the "Save" feature, the information for those shops is stored directly on your device using your browser's local storage. We do not have access to this information. It remains on your device until you clear it.
-          </li>
+            <li>
+                <strong>Location Information:</strong> The locations you manually type into the search bar, or your device's coordinates if you grant permission, are used *only* to construct a search query. This information is sent directly to third-party services (like Google Maps) when you perform a search. We do not store, log, or have access to this information on our servers.
+            </li>
+            <li>
+                <strong>Mindful Drinking Hub Data:</strong> All data you enter into the Mindful Drinking Hub (such as your drink log and settings) is stored *only* on your device using your browser's local storage. We cannot see or access this data. It remains on your device until you clear your browser data.
+            </li>
         </ul>
 
         <h3 className="text-xl font-bold text-indigo-400">Data from Third-Party Services</h3>
         <p>
-            To provide accurate results, our application uses data from Google services. This includes shop names, addresses, opening hours, ratings, and photos. Your search query is used to fetch this information.
+            When you perform a search, our app helps you access data from Google services by opening Google Maps in a new tab. This includes business names, addresses, opening hours, and other details. Your interaction with Google Maps is governed by Google's own privacy policy.
         </p>
         
         <h3 className="text-xl font-bold text-indigo-400">How We Use Information</h3>
-        <ul className="list-disc list-inside space-y-2 pl-4">
-          <li>To provide and improve the service's core functionality (finding shops).</li>
-          <li>To ensure the app functions correctly and to diagnose technical issues.</li>
-        </ul>
+        <p>
+            The limited information processed by the app is used solely to provide and improve the service's core functionality (finding local services and offering private mindfulness tools).
+        </p>
 
         <h3 className="text-xl font-bold text-indigo-400">Information Sharing</h3>
         <p>
-          We do not sell, trade, or otherwise transfer your personal information to outside parties. Your search queries and location data are processed anonymously.
+          We do not sell, trade, or otherwise transfer your personal information to outside parties. Your search queries and location data are handled as described above to maintain your privacy.
         </p>
 
         <h3 className="text-xl font-bold text-indigo-400">Your Consent</h3>
