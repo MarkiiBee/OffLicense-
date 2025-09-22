@@ -1,0 +1,7 @@
+{
+  "name": "Off Licence Near Me",
+  "description": "Find late-night services like food, shops & transport instantly. Includes a private hub with mindful drinking resources & confidential mental wellness support.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
